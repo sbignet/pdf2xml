@@ -1,0 +1,171 @@
+<!--
+	This file is part of the pdf2xml package.
+	https://github.com/sbignet/pdf2xml
+	(c) Stéphane Bignet <github@bigstef.net>
+
+	For the full copyright and license information, please view the LICENSE
+	file that was distributed with this source code.
+-->
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<xs:complexType name="pdf_array">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="array"      type="pdf_array" />
+			<xs:element name="boolean"    type="pdf_boolean" />
+			<xs:element name="dictionary" type="pdf_dictionary" />
+			<xs:element name="name"       type="pdf_name" />
+			<xs:element name="null"       type="xs:string" nillable="true" />
+			<xs:element name="numeric"    type="pdf_numeric" />
+			<xs:element name="objref"     type="pdf_objref" />
+			<xs:element name="stream"     type="pdf_stream" />
+			<xs:element name="string"     type="pdf_string" />
+		</xs:choice>
+	</xs:complexType>
+	<xs:simpleType name="pdf_boolean">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="true|false" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="pdf_dictionary">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="name" type="pdf_name" />
+		</xs:choice>
+	</xs:complexType>
+	<xs:simpleType name="pdf_filter">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ASCIIHexDecode" />
+			<xs:enumeration value="ASCII85Decode" />
+			<xs:enumeration value="LZWDecode" />
+			<xs:enumeration value="FlateDecode" />
+			<xs:enumeration value="RunLengthDecode" />
+			<xs:enumeration value="CCITTFaxDecode" />
+			<xs:enumeration value="JBIG2Decode" />
+			<xs:enumeration value="DCTDecode" />
+			<xs:enumeration value="JPXDecode" />
+			<xs:enumeration value="Crypt" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="pdf_name">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="array"      type="pdf_array" />
+			<xs:element name="boolean"    type="pdf_boolean" />
+			<xs:element name="dictionary" type="pdf_dictionary" />
+			<xs:element name="name"       type="pdf_name" />
+			<xs:element name="null"       type="xs:string" nillable="true" />
+			<xs:element name="numeric"    type="pdf_numeric" />
+			<xs:element name="objref"     type="pdf_objref" />
+			<xs:element name="string"     type="pdf_string" />
+		</xs:choice>
+		<xs:attribute name="value" type="pdf_name_value" use="required" />
+	</xs:complexType>
+	<xs:simpleType name="pdf_name_value">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[\p{IsBasicLatin}-[\s]]+" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="pdf_numeric">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[+-]?[0-9]*[.]?[0-9]+" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="pdf_objref">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]+_[0-9]+" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="pdf_stream">
+		<xs:sequence>
+			<xs:element name="filter" type="pdf_filter" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="data" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:choice minOccurs="1" maxOccurs="unbounded">
+						<xs:element name="part" type="pdf_stream_part" />
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="encoding" type="pdf_stream_encoded" use="required"/>
+	</xs:complexType>
+	<xs:simpleType name="pdf_stream_encoded">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Base64" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="pdf_stream_part">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="order" type="xs:integer" use="required" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="pdf_string">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="type"     type="pdf_string_type"    use="required" />
+				<xs:attribute name="encoding" type="pdf_stream_encoded" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:simpleType name="pdf_string_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="literal" />
+			<xs:enumeration value="hexadecimal" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="pdf_version">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]+[.][0-9]+" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="pdf">
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="trailer">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="root"    type="pdf_objref" minOccurs="0" maxOccurs="1" />
+							<xs:element name="encrypt" type="pdf_objref" minOccurs="0" maxOccurs="1" />
+							<xs:element name="info"    type="pdf_objref" minOccurs="0" maxOccurs="1" />
+							<xs:element name="id" minOccurs="0">
+								<xs:complexType>
+									<xs:all>
+										<xs:element name="array">
+											<xs:complexType>
+												<xs:choice minOccurs="1" maxOccurs="unbounded">
+													<xs:element name="string" type="pdf_string" />
+												</xs:choice>
+											</xs:complexType>
+										</xs:element>
+									</xs:all>
+								</xs:complexType>
+							</xs:element>
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="objects">
+					<xs:complexType>
+						<xs:choice minOccurs="1" maxOccurs="unbounded">
+							<xs:element name="object">
+								<xs:complexType>
+									<xs:choice minOccurs="0" maxOccurs="unbounded">
+										<xs:element name="array"      type="pdf_array" />
+										<xs:element name="boolean"    type="pdf_boolean" />
+										<xs:element name="dictionary" type="pdf_dictionary" />
+										<xs:element name="name"       type="pdf_name" />
+										<xs:element name="null"       type="xs:string" nillable="true" />
+										<xs:element name="numeric"    type="pdf_numeric" />
+										<xs:element name="objref"     type="pdf_objref" />
+										<xs:element name="stream"     type="pdf_stream" />
+										<xs:element name="string"     type="pdf_string" />
+									</xs:choice>
+									<xs:attribute name="name" type="pdf_objref" use="required" />
+								</xs:complexType>
+							</xs:element>
+						</xs:choice>
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+			<xs:attribute name="version" type="pdf_version" use="required" />
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
