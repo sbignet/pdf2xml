@@ -1515,7 +1515,7 @@ function pdf2xml_xml_array($pdf, XMLWriter $xmlWriter)
 function pdf2xml_xml_boolean($pdf, XMLWriter $xmlWriter)
 {
 	$xmlWriter->startElement('boolean');
-	$xmlWriter->text($obj[1]);
+	$xmlWriter->text($pdf[1]);
 	$xmlWriter->endElement();
 }
 
