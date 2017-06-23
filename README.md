@@ -8,6 +8,8 @@ pdf2xml options command are:
       --validate => to validate a xml file before to converse it in pdf file
       -h, --help => print this help
 
+A xsd file is included to check xml input.
+
 Exemple:
 
 	To converse a pdf in a xml file
