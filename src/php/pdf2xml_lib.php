@@ -639,11 +639,12 @@ function pdf2xml_parser_string_hexadecimal(Line $line)
  */
 function pdf2xml_validating($xml_file)
 {
+	Phar::interceptFileFuncs();
 	libxml_use_internal_errors(true);
 	$errors = array();
 	$xml    = new DOMDocument();
 	$xml->load($xml_file);
-	if(!$xml->schemaValidate(PDF_XML_XSD))
+	if(!$xml->schemaValidateSource(file_get_contents(PDF_XML_XSD)))
 	{
 		$errors = libxml_get_errors();
 	}
