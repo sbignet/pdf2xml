@@ -95,8 +95,21 @@ if(!empty($options))
 				$output_ext = $output->getExtension();
 				if(!is_file($output->getPathname()))
 				{
-					file_put_contents($output->getPathname(), '');
-					$output = new SplFileInfo($output->getPathname());
+					if(!is_dir($output->getPath()))
+					{
+						mkdir($output->getPath(), 0777, true);
+					}
+					if(touch($output->getPathname()))
+					{
+						file_put_contents($output->getPathname(), '');
+						$output = new SplFileInfo($output->getPathname());
+					}
+					else
+					{
+						$msg = 'The  output file can\'t be created!';
+						echo (isset($options['json']))? json_encode(array('errors' => array($msg))).PHP_EOL: $msg.PHP_EOL;                
+						exit;
+					}
 				}
 				switch($input_ext.'_'.$output_ext)
 				{
