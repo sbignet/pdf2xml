@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 /*
  * This file is part of the pdf2xml package.
@@ -7,6 +8,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
+//Comment this two lines before this for disabled phar instruction
+Phar::mapPhar('pdf2xml.phar');
+set_include_path('phar://pdf2xml.phar'.PATH_SEPARATOR.get_include_path());
 
 if(isset($argv[0]))
 {
@@ -174,3 +179,6 @@ function pdf2xml_help()
 	echo '      -h, --help => print this help'.PHP_EOL;
 	exit;
 }
+
+//Comment this lines before this for disabled phar instruction
+__HALT_COMPILER();

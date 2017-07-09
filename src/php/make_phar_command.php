@@ -12,8 +12,9 @@
 $phar = new Phar('pdf2xml.phar');
 $phar['pdf2xml.xsd']     = file_get_contents('pdf2xml.xsd');
 $phar['pdf2xml_lib.php'] = file_get_contents('pdf2xml_lib.php');
-$phar['pdf2xml.php']     = file_get_contents('pdf2xml.php');
+//$phar['pdf2xml.php']     = file_get_contents('pdf2xml.php');
 
+/*
 $stub = <<<"EOT"
 #!/usr/bin/env php
 <?php
@@ -22,6 +23,8 @@ set_include_path('phar://pdf2xml.phar'.PATH_SEPARATOR.get_include_path());
 require('pdf2xml.php');
 __HALT_COMPILER();
 EOT;
+ * 
+ */
 
-$phar->setStub($stub);
+$phar->setStub(file_get_contents('pdf2xml.php'));
 system('chmod +x pdf2xml.phar');
